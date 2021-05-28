@@ -181,8 +181,6 @@ else if (ind==4){
 }// parent
 
 void child(int fd1[], int fd2[], int ind){
-//	printf("child %d\n", ind);
-//	sleep(1);
 	int R1, C1, R2, C2;
 	int count = 0;
 	switch(ind){
@@ -206,32 +204,20 @@ void child(int fd1[], int fd2[], int ind){
 	read(fd1[0], &R1, sizeof(float));	read(fd1[0], &C1, sizeof(float));
 	read(fd1[0], &R2, sizeof(float));	read(fd1[0], &C2, sizeof(float));
 
-// answer matrix	
+	// answer matrix	
 	float Mat3[R1][C2]; for(int i=0;i<R1;i++) for(int c=0; c<C2; c++) Mat3[i][c] = 0.0;
 
 	float Mat1[R1][C1], Mat2[R2][C2];
 
 	for(int r=0; r<R1; r++) for(int c=0; c<C1; c++)	read(fd1[0], &Mat1[r][c], sizeof(float));
 	for(int r=0; r<R2; r++)	for(int c=0; c<C2; c++)	read(fd1[0], &Mat2[r][c], sizeof(float));
-/*
-printf("\nMat1 seen\n");
-for(int i=0; i<R1; i++) { for(int j=0; j<C1; j++) printf("%f ", Mat1[i][j]); printf("\n");}
-
-printf("\nMat2 seen\n");
-for(int i=0; i<R2; i++) { for(int j=0; j<C2; j++) printf("%f ", Mat2[i][j]); printf("\n");}
-*/
+	
 	// matrix multiplication
 
 	for(int i=0; i<R1; i++)
 		for(int k=0; k<C2; k++)
 			for(int j=0; j<C1; j++)
 				Mat3[i][k] += Mat1[i][j] * Mat2[j][k];
-
-/*
-printf("\nMat3 seen\n");
-for(int i=0; i<R1; i++){
-	for(int j=0; j<C2; j++) printf("%f ", Mat3[i][j]); printf("\n") ;}
-*/
 
 
 	read(fd1[0], &R1, sizeof(float));	read(fd1[0], &C1, sizeof(float));
@@ -242,13 +228,6 @@ for(int i=0; i<R1; i++){
 	for(int r=0; r<R1; r++) for(int c=0; c<C1; c++)	read(fd1[0], &Mat4[r][c], sizeof(float));
 	for(int r=0; r<R2; r++)	for(int c=0; c<C2; c++)	read(fd1[0], &Mat5[r][c], sizeof(float));
 
-/*
-printf("\nMat4 seen\n");
-for(int i=0; i<R1; i++) { for(int j=0; j<C1; j++) printf("%f ", Mat4[i][j]); printf("\n");}
-
-printf("\nMat5 seen\n");
-for(int i=0; i<R2; i++) { for(int j=0; j<C2; j++) printf("%f ", Mat5[i][j]); printf("\n");}
-*/
 	for(int i=0; i<R1; i++)
 		for(int k=0; k<C2; k++)
 			for(int j=0; j<C1; j++)
@@ -257,19 +236,13 @@ for(int i=0; i<R2; i++) { for(int j=0; j<C2; j++) printf("%f ", Mat5[i][j]); pri
 close(fd2[0]);
 count = R1*C2;
 write(fd2[1], &count, sizeof(int));
-/*
-printf("\nMat3 seen\n");
-for(int i=0; i<R1; i++){
-	for(int j=0; j<C2; j++) printf("%f ", Mat3[i][j]); printf("\n");}
-printf("------------------\n");
-*/
 
 	for(int i=0; i<R1; i++) for(int j=0; j<C2; j++)	write(fd2[1], &Mat3[i][j], sizeof(float));
 	exit(0);
 }
 
 int setpipe(int n, int m, int fd1[n][2], int fd2[n][2]){
-// m is the number of pipes
+	
 	for(int i=1; i<=m;i++){
 		if ( pipe(fd1[i-1])==-1 ){
 			perror("Pipe Failed for fd1");
@@ -324,7 +297,6 @@ void readfile(char * filename, int times, float arr[]){
 while(i<times  && !feof(fp))
 	fscanf(fp, "%f", &arr[i++]);
 
-//printf("i = %d, times= %d\n", i, times);
 if(i < times) { printf("Not enough values in %s \n", filename); exit(0);} 
 	fclose(fp);
 
@@ -333,8 +305,6 @@ if(i < times) { printf("Not enough values in %s \n", filename); exit(0);}
 void get_val(float arr1[], float arr2[], int size, struct Parsed values){
 	readfile(values.file1, size , arr1);
 	readfile(values.file2, size , arr2);
-	//for(int i=0; i<size*size; i++)
-	//	scanf("%f", &arr2[i]);
 }
 
 void handler(int signum){
@@ -435,18 +405,6 @@ int main(int argc, char *argv[]){
 	}
 
 // ----------------------------------------
-/*	for(int i=0; i<N; i++){
-		for(int j=0; j<N; j++) printf("%f ", MAT1[i][j]);
-		printf("\n");
-	}
-
-printf("\n\n");
-	for(int i=0; i<N; i++){
-		for(int j=0; j<N; j++) printf("%f ", MAT2[i][j]);
-		printf("\n");
-	}
-printf("\n");
-*/
 
 	for(int i=0; i<N; i++){
 		for(int j=0; j<N; j++) printf("%-20f ", MAT3[i][j]);
